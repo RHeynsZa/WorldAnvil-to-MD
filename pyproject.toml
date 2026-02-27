@@ -1,0 +1,14 @@
+[project]
+name = "worldanvil-to-md"
+version = "1.0.0"
+description = "Convert World Anvil JSON exports to Obsidian markdown files."
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "httpx",
+    "pyyaml",
+    "tqdm",
+]
+
+[tool.uv]
+package = false

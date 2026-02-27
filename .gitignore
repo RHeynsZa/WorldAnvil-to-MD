@@ -1,0 +1,6 @@
+World-Anvil-Export
+World-Anvil-Output
+images
+__pycache__
+.venv
+debug-output

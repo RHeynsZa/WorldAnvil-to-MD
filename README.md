@@ -11,6 +11,21 @@ If you're reading this, we're probably of a like mind, so I'll shout out two thi
 
 ## Using the script
 
+Install dependencies with `uv`:
+```
+uv sync
+```
+
+Then run the parser with:
+```
+uv run python WA-Parser.py
+```
+
+For debugging, you can override output location without changing script defaults:
+```
+uv run python WA-Parser.py --output-dir ./debug-output --output-root
+```
+
 The key variables you need to edit are:
 ```
 source_directory = 'World-Anvil-Export'
