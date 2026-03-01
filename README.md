@@ -1,77 +1,233 @@
 # WorldAnvil-to-MD
-Parses a World Anvil world export into Markdown files, primarily for [Obsidian](https://obsidian.md/). The script also adds some metadata yaml to the files and downloads images which are formatted as Obsidian embeds.
 
-I wanted to bring my World Anvil content over to Obsidian but it was going to take me quite a bit of time to move it all over, much less in an organized fashion. Hence, this nifty bit of code.
+Convert a World Anvil JSON export into Obsidian-ready markdown with frontmatter, wiki-links, template-based rendering, and automatic image downloads.
 
-If you're reading this, we're probably of a like mind, so I'll shout out two things that have made my GM'ing life far easier:
-- If you use FoundryVTT for D&D like I do go check out this awesome plugin by Praxxian that lets you import Obsidian files, images and all, into Foundry: https://github.com/Praxxian/lava-flow
-- I also highly recommend [Jeremy](https://github.com/valentine195) and all of their great Obsidian plugins for your D&D needs.
+This project is optimized for campaign/worldbuilding vaults and supports ITS Theme callouts plus optional Leaflet map blocks.
 
-# Usage
+## Features
 
-## Using the script
+- Converts exported World Anvil entities into `.md` notes.
+- Preserves internal references as Obsidian wiki-links where possible.
+- Writes YAML frontmatter (`creationDate`, `publicationDate`, `template`, `world`, `tags`).
+- Cleans note filenames for link-safe output (no UID suffixes in normal cases).
+- Normalizes tags (spaces become dashes).
+- Converts common BBCode and World Anvil markup.
+- Converts `[spotify:...]` tags into embeddable Spotify iframes.
+- Downloads cover images and inline images used in note content.
+- Supports inline image API fallback for missing export metadata.
+- Supports ITS Theme template rendering via Jinja.
+- Supports optional Leaflet map embedding with fuzzy map lookup.
 
-Install dependencies with `uv`:
-```
+## Requirements
+
+- Python `>=3.9`
+- `uv` (recommended package/environment manager)
+
+## Installation
+
+```bash
+git clone <your-fork-or-this-repo-url>
+cd WorldAnvil-to-MD
 uv sync
 ```
 
-Then run the parser with:
+This installs all runtime dependencies from `pyproject.toml`:
+
+- `httpx`
+- `jinja2`
+- `pyyaml`
+- `tqdm`
+
+## Project layout
+
+Expected high-level structure:
+
+```text
+WorldAnvil-to-MD/
+├── WA-Parser.py
+├── wa_parser/
+├── templates/
+├── World-Anvil-Export/
+│   ├── articles/
+│   ├── images/
+│   └── maps/
+└── (your output folders)
 ```
+
+## Quick start
+
+1. Export your world JSON from World Anvil.
+2. Place the export under `World-Anvil-Export/`.
+3. Update settings in `wa_parser/config.py` (see config reference below).
+4. Run conversion:
+
+```bash
 uv run python WA-Parser.py
 ```
 
-For debugging, you can override output location without changing script defaults:
-```
+For local debugging output:
+
+```bash
 uv run python WA-Parser.py --output-dir ./debug-output --output-root
 ```
 
-The key variables you need to edit are:
-```
-source_directory = 'World-Anvil-Export'
-destination_directory = 'World-Anvil-Output'
-obsidian_resource_folder = 'images'
+## CLI usage
 
-attempt_bbcode = True
+```bash
+uv run python WA-Parser.py [file_filter] [--file-regex REGEX] [--output-dir PATH] [--output-root]
 ```
 
-``source_directory`` should point at the local folder with your world anvil exports
-``destination_directory`` is where you want the formatted files and folders to end up
-``obsidian_resource_folder`` is where the images will be stored
-``attempt_bbcode`` determines whether or not it will attempt to convert BBCode to Markdown... it works sometimes, and probably is better than not doing so, but it isn't perfect
+### Arguments
 
-Once these variables are set run the script with Python and it will print output when it is done.
+- `file_filter` (optional): plain text filter converted to regex safely.
+- `--file-regex`: regex against basename/full path.
+- `--output-dir`: override `destination_directory` for markdown output.
+- `--output-root`: disable template-type folder nesting for easier debugging.
 
-## Sample file structire
+### Important behavior
 
-An example file structure to export your files could look like so:
+When `file_filter`/`--file-regex` matches multiple files, the parser intentionally converts **only the first sorted match**.
+
+## Configuration reference
+
+Main config lives in `wa_parser/config.py`.
+
+### Core paths
+
+- `source_directory`: root of World Anvil export.
+- `destination_directory`: markdown output root.
+- `obsidian_resource_folder`: downloaded image output folder.
+
+### Parsing and rendering
+
+- `attempt_bbcode`: enable BBCode-to-markdown conversion.
+- `its_theme_support`: enable Jinja ITS template rendering.
+- `templates_directory`: template folder path.
+
+### Leaflet support
+
+- `leaflet_plugin_support`: enable map lookup + Leaflet block rendering.
+- `leaflet_default_height`: Leaflet block height.
+- `leaflet_minimal_template`: when `True`, map-matched notes render as map-only body.
+
+### Inline image API fallback
+
+- `inline_image_api_fallback_enabled`
+- `worldanvil_api_key`
+- `worldanvil_world_id`
+- `worldanvil_image_api_url_template` (must contain `{image_id}`)
+- `worldanvil_api_auth_header`
+- `worldanvil_api_timeout_seconds`
+- `worldanvil_api_retries`
+- `missing_inline_image_placeholder_enabled`
+- `force_missing_inline_image_ids` (test hook)
+
+## Templates
+
+Templates live in `templates/`:
+
+- `generic.j2` (fallback ITS template)
+- `location.j2`
+- `settlement.j2`
+- `article.j2`
+- `item.j2`
+- `material.j2`
+- `organization.j2`
+- `person.j2`
+- `plot.j2`
+- `leaflet-minimal.j2` (map-only body when enabled)
+
+Template resolution:
+
+- If `its_theme_support = True`, parser tries `<templateType>.j2`, then falls back to `generic.j2`.
+- If Leaflet is enabled and `leaflet_minimal_template = True` and a map is matched, `leaflet-minimal.j2` is used for the body.
+
+## Image handling
+
+The parser handles:
+
+- Cover images (`cover.url`, `cover.title`)
+- Inline images:
+  - `[img:12345]`
+  - `[img]12345[/img]`
+  - with optional params like `[img:12345|left|300]`
+
+Behavior:
+
+- Looks up image ID in exported `World-Anvil-Export/images/*.json`
+- Falls back to API lookup (if configured)
+- Queues resolved images for download into `obsidian_resource_folder`
+- If unresolved and placeholders enabled, emits warning callout
+
+## Leaflet map behavior
+
+When enabled:
+
+- Scans `World-Anvil-Export/maps/**` for `Map` entities.
+- Fuzzy-matches article title to map title.
+- Picks best map image match from indexed images.
+- Emits a minimal Leaflet code block in markdown when matched.
+
+Current output style is intentionally minimal (no auto markers).
+
+Leaflet plugin reference: [obsidian-leaflet](https://github.com/javalent/obsidian-leaflet)
+
+## Output structure
+
+By default, notes are written under template folders:
+
+```text
+<destination_directory>/<templateType>/<type-title-lowercase>/<Note Title>.md
 ```
--> WorldAnvil-to-MD/
----> images/
----> World-Anvil-Export/
----> World-Anvil-Output/
----> WA-Parser.py
+
+If `--output-root` is set:
+
+```text
+<output-dir>/<type-title-lowercase>/<Note Title>.md
 ```
 
-## Modifying
+If no type title exists, the type subfolder is omitted.
 
-If you have any specialized sections or content tags you need to extract, you can try and add them under ``content_tags_to_extract``. Same with specific yaml metadata you want to add, you can try and add an additional entry under ``yaml_data``. The format is looking for nested tags, so keep that in mind depending on how nested your tags are.
+## Troubleshooting
 
-## Exporting directly into your vault
-It is recommended that you export to a separate folder rather than directly into your Obsidian vault, then when done simply drag the output into the vault.
+- **No files converted**
+  - Check `source_directory` and export folder placement.
+  - Verify `--file-regex` pattern actually matches.
 
-However if you would like to import directly into your vault, change the ``destination_directory`` to the desired location in your vault and the ``obsidian_resource_folder`` path to your Obsidian attachments folder. I recommend backing up your vault before doing it with this method, as things may be overwritten if filenames match. But if you're brave, go for it.
+- **Images not downloading**
+  - Ensure `obsidian_resource_folder` exists/is writable.
+  - Verify image URLs in export JSON are valid.
 
-# Exporting from World Anvil
+- **Inline image IDs unresolved**
+  - Configure API fallback settings in `config.py`.
+  - Confirm `worldanvil_image_api_url_template` includes `{image_id}`.
 
-See World Anvil's instructions on this here: https://blog.worldanvil.com/worldanvil/dev-news/new-feature-world-exporting/
+- **Template not applied**
+  - Ensure `its_theme_support = True`.
+  - Ensure template file exists in `templates/`.
 
-A quick rundown on how it's done:
-1. In World Anvil go to your world configuration page and select "Open Tools & Advanced Actions"
-2. Select the dropdown for "EXPORT WORLD" click "Export this World"
-3. You're going to need an API key for this. You can make one here: https://www.worldanvil.com/api/auth/key
-4. To finalize the export you need to provide your API key and an email address, specifically a Google one according to World Anvil (This looks to because they are sharing a drive version of the export with you, rather than emailing it directly to you)
-5. You can leave "Include Worlds" blank to export everthing, or specify a world name, then click Start
-6. Once it is completed you will be emailed your world export
+## Development
 
-<a href="https://www.buymeacoffee.com/nynir" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-orange.png" alt="Buy Me A Coffee" height="41" width="174"></a>
+Run a quick syntax check:
+
+```bash
+uv run python -m py_compile WA-Parser.py wa_parser/*.py
+```
+
+Typical targeted test run:
+
+```bash
+uv run python WA-Parser.py --file-regex "^Settlement-Pottersteel-0dc\\.json$" --output-dir ./debug-output --output-root
+```
+
+## Contributing
+
+Contributions are welcome:
+
+- Open an issue for bugs/feature requests.
+- Submit focused PRs with clear before/after behavior.
+- Include a sample conversion case when changing parsing/rendering logic.
+
+## License
+
+See `LICENSE`.

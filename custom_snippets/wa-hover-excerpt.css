@@ -1,0 +1,29 @@
+/*
+ * WorldAnvil export tweaks for Obsidian:
+ * 1) Excerpt callouts are hidden in regular note view.
+ * 2) Excerpt callouts are visible in link hover popovers.
+ * 3) Banner/header images are not capped by max-height.
+ */
+
+/* Hide hover-only excerpt callout in normal reading views. */
+.markdown-reading-view .callout[data-callout-metadata~="wa-hover-only"],
+.markdown-preview-view .callout[data-callout-metadata~="wa-hover-only"] {
+  display: none !important;
+}
+
+/* Show hover-only excerpt callout in hover previews. */
+.hover-popover .callout[data-callout-metadata~="wa-hover-only"] {
+  display: block !important;
+}
+
+/* 0 max-height banner/header images on hover */
+
+.hover-popover .image-embed[alt*="banner"] img {
+  max-height: 0 !important;
+  height: 0 !important;
+}
+
+/* Remove top margin in hover popovers to prevent extra spacing when banner images are hidden. */
+.hover-popover .markdown-preview-section {
+  margin-top: 0 !important;
+}

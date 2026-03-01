@@ -1,0 +1,86 @@
+{% if has_image %}![[{{ cover_title }}|banner+tall]]
+
+{% endif %}## {{ title }}{% if title_pronunciation %} <span style="font-family: 'Courier New'; color: #6e7681; font-weight: normal; font-size: 0.8em;">({{ title_pronunciation }})</span>{% endif %}
+{{ "\n" }}
+{% if title_subheading %}
+>> (Subheading:: {{ title_subheading }})
+{% endif %}
+{% if title_excerpt %}
+> [!quote|wa-hover-only] Excerpt
+> {{ title_excerpt | replace('\n', '\n> ') }}
+{% endif %}
+
+{% if sidebar_top_blocks or infobox_facts or sidebar_panel_blocks or sidebar_bottom_blocks %}> [!infobox|right]
+> # {{ title }}
+{% for block in sidebar_top_blocks %}> {{ block | replace('\n', '\n> ') }}
+{% if not loop.last %}
+> ---
+{% endif %}
+{% endfor %}
+{% if sidebar_top_blocks and (infobox_facts or sidebar_panel_blocks or spotify_blocks or sidebar_bottom_blocks) %}> ---
+{% endif %}
+{% for label, value in infobox_facts %}> **{{ label }}**: {{ value }}
+{% endfor %}
+{% if infobox_facts and (sidebar_panel_blocks or spotify_blocks or sidebar_bottom_blocks) %}> ---
+{% endif %}
+{% for block in sidebar_panel_blocks %}> {{ block | replace('\n', '\n> ') }}
+{% if not loop.last %}
+> ---
+{% endif %}
+{% endfor %}
+{% if sidebar_panel_blocks and (spotify_blocks or sidebar_bottom_blocks) %}> ---
+{% endif %}
+{% for block in spotify_blocks %}> {{ block | replace('\n', '\n> ') }}
+{% if not loop.last %}
+> ---
+{% endif %}
+{% endfor %}
+{% if spotify_blocks and sidebar_bottom_blocks %}> ---
+{% endif %}
+{% for block in sidebar_bottom_blocks %}> {{ block | replace('\n', '\n> ') }}
+{% if not loop.last %}
+> ---
+{% endif %}
+{% endfor %}
+
+{% endif %}
+{% if leaflet_block %}{{ leaflet_block }}
+
+{% endif %}
+{% if main_content %}{{ main_content }}
+
+{% endif %}
+{% if navigation_lines %}> [!tip]- Navigation
+{% for line in navigation_lines %}> {{ line }}
+{% endfor %}
+
+{% endif %}
+# Extras
+
+{% for section_name, section_links in card_link_sections %}## {{ section_name }}
+
+> [!cards]
+{% for link in section_links %}> **{{ link }}**
+{% if not loop.last %}>
+{% endif %}
+{% endfor %}
+
+{% endfor %}
+{% for field_name, field_content in generic_fields %}## {{ field_name }}
+
+{{ field_content }}
+
+{% endfor %}
+{% for section_name, section_content in extra_sections %}## {{ section_name }}
+
+{{ section_content }}
+
+{% endfor %}
+{% if extra_relations %}> [!example]- Relations
+{% for relation_name, relation_content in extra_relations %}> **{{ relation_name }}**
+> {{ relation_content | replace('\n', '\n> ') }}
+{% if not loop.last %}
+>
+{% endif %}
+{% endfor %}
+{% endif %}
