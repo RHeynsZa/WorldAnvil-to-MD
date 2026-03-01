@@ -2,6 +2,8 @@
 
 Convert a World Anvil JSON export into Obsidian-ready markdown with frontmatter, wiki-links, template-based rendering, and automatic image downloads.
 
+Massive shoutout to Nynir at [WorldAnvil-to-MD](https://github.com/Nynir/WorldAnvil-to-MD) for the original project. I originally planned to PR this back, but I kinda went off the rails here. So better to just start a repo I think
+
 This project is optimized for campaign/worldbuilding vaults and supports ITS Theme callouts plus optional Leaflet map blocks.
 
 ![Python](https://img.shields.io/badge/python-3.9%2B-3776AB?logo=python&logoColor=white)
@@ -18,13 +20,13 @@ This project is optimized for campaign/worldbuilding vaults and supports ITS The
 
 ### Main note rendering
 
-![Main Preview 1](images/preview1.png)
-![Main Preview 2](images/preview2.png)
+![Main Preview 1](img/preview1.png)
+![Main Preview 2](img/preview2.png)
 
 ### Hover preview behavior
 
-![Hover Preview 1](images/hover_preview1.png)
-![Hover Preview 2](images/hover_preview2.png)
+![Hover Preview 1](img/hover_preview1.png)
+![Hover Preview 2](img/hover_preview2.png)
 
 ## Features
 
