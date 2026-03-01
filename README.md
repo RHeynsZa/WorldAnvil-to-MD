@@ -4,6 +4,28 @@ Convert a World Anvil JSON export into Obsidian-ready markdown with frontmatter,
 
 This project is optimized for campaign/worldbuilding vaults and supports ITS Theme callouts plus optional Leaflet map blocks.
 
+![Python](https://img.shields.io/badge/python-3.9%2B-3776AB?logo=python&logoColor=white)
+![Obsidian](https://img.shields.io/badge/Obsidian-ready-7C3AED?logo=obsidian&logoColor=white)
+![Templates](https://img.shields.io/badge/Jinja-ITS%20templates-F97316)
+![Leaflet](https://img.shields.io/badge/Leaflet-optional-22C55E)
+
+## Optional integrations
+
+- 🎨 **ITS Theme rendering (optional):** rich callouts, infobox style layouts, card sections.
+- 🗺️ **Leaflet support (optional):** map lookup + Obsidian Leaflet block generation for map notes.
+
+## Preview
+
+### Main note rendering
+
+![Main Preview 1](images/preview1.png)
+![Main Preview 2](images/preview2.png)
+
+### Hover preview behavior
+
+![Hover Preview 1](images/hover_preview1.png)
+![Hover Preview 2](images/hover_preview2.png)
+
 ## Features
 
 - Converts exported World Anvil entities into `.md` notes.
@@ -108,7 +130,7 @@ Main config lives in `wa_parser/config.py`.
 
 - `leaflet_plugin_support`: enable map lookup + Leaflet block rendering.
 - `leaflet_default_height`: Leaflet block height.
-- `leaflet_minimal_template`: when `True`, map-matched notes render as map-only body.
+- `leaflet_minimal_template`: when `True`, `Map` entities render as map-only body.
 
 ### Inline image API fallback
 
@@ -135,12 +157,12 @@ Templates live in `templates/`:
 - `organization.j2`
 - `person.j2`
 - `plot.j2`
-- `leaflet-minimal.j2` (map-only body when enabled)
+- `leaflet-minimal.j2` (map-only body for `Map` entities when enabled)
 
 Template resolution:
 
 - If `its_theme_support = True`, parser tries `<templateType>.j2`, then falls back to `generic.j2`.
-- If Leaflet is enabled and `leaflet_minimal_template = True` and a map is matched, `leaflet-minimal.j2` is used for the body.
+- If Leaflet is enabled and `leaflet_minimal_template = True`, `leaflet-minimal.j2` is used for `Map` entities.
 
 ## Image handling
 

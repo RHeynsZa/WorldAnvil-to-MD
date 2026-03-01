@@ -1,13 +1,14 @@
 {% if has_image %}![[{{ cover_title }}|banner+tall]]
 
-{% endif %}## {{ title }}{% if title_pronunciation %} <span style="font-family: 'Courier New'; color: #6e7681; font-weight: normal; font-size: 0.8em;">({{ title_pronunciation }})</span>{% endif %}
+{% endif %}# {{ title }}{% if title_pronunciation %} <span style="font-family: 'Courier New'; color: #6e7681; font-weight: normal; font-size: 0.8em;">({{ title_pronunciation }})</span>{% endif %}
 {{ "\n" }}
-{% if title_subheading %}
->> (Subheading:: {{ title_subheading }})
-{% endif %}
 {% if title_excerpt %}
-> [!quote|wa-hover-only] Excerpt
+> [!quote|mark wa-hover-only]
 > {{ title_excerpt | replace('\n', '\n> ') }}
+
+{% endif %}
+{% if title_subheading %}
+### {{ title_subheading }})
 {% endif %}
 
 {% if sidebar_top_blocks or infobox_facts or sidebar_panel_blocks or sidebar_bottom_blocks %}> [!infobox|right]

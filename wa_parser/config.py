@@ -51,7 +51,8 @@ ignored_fields = {
     "allowContentCopy", "showInToc", "isEmphasized", "displayAuthor",
     "displayChildrenUnder", "displayTitle", "displaySheet", "badge", "editURL",
     "isEditable", "success", "genres", "theme", "fans", "isBook", "displayBookTitle",
-    "isCollapsed", "systemMeta", "pagecover", "bookcover", "parsedDescription", "redirectedCategories"
+    "isCollapsed", "systemMeta", "pagecover", "bookcover", "parsedDescription", "redirectedCategories",
+    "locationTemplateType"
 }
 
 # Fields rendered by dedicated logic instead of generic field rendering.

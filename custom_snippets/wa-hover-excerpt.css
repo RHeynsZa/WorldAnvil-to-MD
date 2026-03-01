@@ -19,11 +19,11 @@
 /* 0 max-height banner/header images on hover */
 
 .hover-popover .image-embed[alt*="banner"] img {
-  max-height: 0 !important;
-  height: 0 !important;
+  max-height: 120px !important;
+  height: 120px !important;
 }
 
 /* Remove top margin in hover popovers to prevent extra spacing when banner images are hidden. */
 .hover-popover .markdown-preview-section {
-  margin-top: 0 !important;
+  margin-top: 60px !important;
 }
